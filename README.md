@@ -1,43 +1,56 @@
-# Next.js on Netlify Platform Starter
+```markdown
+# Dream Choice — Contact Integrations (Merged)
 
-[Live Demo](https://nextjs-platform-starter.netlify.app/)
+This repository contains a merged static website and three contact handling options so you can pick the one that best fits your hosting:
 
-A modern starter based on Next.js 16 (App Router), Tailwind, and [Netlify Core Primitives](https://docs.netlify.com/core/overview/#develop) (Edge Functions, Image CDN, Blob Store).
+- Static site: `index.html` — accessible, SEO-friendly, JSON-LD, and a progressive contact form that POSTs JSON to `/api/contact`. Mailto fallback to arshad001syed@gmail.com and phone +91 9652864229.
+- a) Node/Express server: `server/index.js` — run on your server or container. Uses nodemailer for SMTP delivery. Optional Google Sheets webhook forwarding.
+- b) Netlify Function: `functions/netlify-contact.js` — serverless function for Netlify Functions.
+- c) Next.js example:
+  - `nextjs/pages/index.js` — React page with the same form.
+  - `nextjs/pages/api/contact.js` — API route sending mail via SMTP or forwarding to Google Sheets.
 
-In this site, Netlify Core Primitives are used both implictly for running Next.js features (e.g. Route Handlers, image optimization via `next/image`, and more) and also explicitly by the user code.
+What you need to configure
+- Set SMTP environment variables (if you want emails sent directly):
+  - SMTP_HOST
+  - SMTP_PORT
+  - SMTP_SECURE (true/false)
+  - SMTP_USER
+  - SMTP_PASS
+  - CONTACT_TO_EMAIL (defaults to arshad001syed@gmail.com)
+- Optional Google Sheets webhook: GOOGLE_SHEET_WEBHOOK_URL (use Apps Script endpoint)
+- For Netlify: add env vars in Netlify site settings.
+- For Next.js: add env vars to Vercel or your host.
 
-Implicit usage means you're using any Next.js functionality and everything "just works" when deployed - all the plumbing is done for you. Explicit usage is framework-agnostic and typically provides more features than what Next.js exposes.
+Quick start (Express)
+1. Copy `server/` and `index.html` to your server.
+2. Create a `.env` using `.env.example`.
+3. npm install && node server/index.js
+4. Serve `index.html` as static (or embed it in your site). Form action should point to the server URL `/api/contact`.
 
-## Deploying to Netlify
+Quick start (Netlify)
+1. Deploy static `index.html` as your site.
+2. Put `functions/netlify-contact.js` into `/functions` and deploy to Netlify.
+3. Set SMTP env vars in Netlify dashboard.
+4. Ensure `index.html` form action points to `/.netlify/functions/netlify-contact`.
 
-Click the button below to deploy this template to your Netlify account.
+Quick start (Next.js)
+1. Drop `nextjs/pages/*` into your Next.js app `pages/` folder.
+2. Deploy to Vercel (or any host supporting Next.js).
+3. Configure SMTP env vars in Vercel.
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/netlify-templates/next-platform-starter)
+Google Sheets (optional)
+- Use the provided Google Apps Script `google-apps-script/Code.gs` to accept POST requests and append rows.
+- Set `GOOGLE_SHEET_WEBHOOK_URL` to the deployed Apps Script URL so serverless or server handlers forward submissions.
 
-## Developing Locally
+Security & spam mitigation
+- Honeypot field `website` is present and checked.
+- Basic server-side validation included; add rate-limiting/recaptcha if spam becomes an issue.
+- Configure a Content-Security-Policy and enable HTTPS in production.
 
-1. Clone this repository, then run `npm install` in its root directory.
-
-2. For the starter to have full functionality locally (e.g. edge functions, blob store), please ensure you have an up-to-date version of Netlify CLI. Run:
+If you want I can:
+- Create a ready-to-push GitHub repo with these files (tell me the repo name and whether to push to your account).
+- Provide a Dockerfile + sample systemd unit for hosting the Express server.
+- Generate a Vercel/Netlify deploy configuration.
 
 ```
-npm install netlify-cli@latest -g
-```
-
-3. Link your local repository to the deployed Netlify site. This will ensure you're using the same runtime version for both local development and your deployed site.
-
-```
-netlify link
-```
-
-4. Then, run the Next.js development server via Netlify CLI:
-
-```
-netlify dev
-```
-
-If your browser doesn't navigate to the site automatically, visit [localhost:8888](http://localhost:8888).
-
-## Resources
-
-- Check out the [Next.js on Netlify docs](https://docs.netlify.com/frameworks/next-js/overview/)
